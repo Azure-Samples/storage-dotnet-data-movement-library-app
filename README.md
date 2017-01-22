@@ -11,6 +11,7 @@ If you don't have a Microsoft Azure subscription you can get a FREE trial accoun
 ## Running this sample
 
 To run this sample:
+
 1. Create an [Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/storage-create-storage-account)
 2. Install [Visual Studio Code](https://code.visualstudio.com/)
 3. Install the Visual Studio Code [C# extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp).
@@ -19,7 +20,6 @@ To run this sample:
 6. At this point, you should see two prompts. One is for adding "required assets to build and debug." Click "yes." Another prompt is for restoring unresolved dependencies. Click "restore."
 7. Your application should now contain a `launch.json` file under the `.vscode` directory. In this file, change the `externalConsole` value to `true`.
 8. Visual Studio Code allows you to debug .NET Core applications. Hit `F5` to run the application.
-
 
 ## More information
 - [Data Movement Library Reference Documentation](https://msdn.microsoft.com/library/azure/microsoft.windowsazure.storage.datamovement.aspx)

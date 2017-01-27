@@ -33,19 +33,19 @@ namespace DMLibSample
 
             if(choice == 1)
             {
-                TransferLocalFileToAzureBlob(account);
+                TransferLocalFileToAzureBlob(account).Wait();
             }
             else if(choice == 2)
             {
-                TransferLocalDirectoryToAzureBlobDirectory(account);
+                TransferLocalDirectoryToAzureBlobDirectory(account).Wait();
             }
             else if(choice == 3)
             {
-                TransferUrlToAzureBlob(account);
+                TransferUrlToAzureBlob(account).Wait();
             }
             else if(choice == 4)
             {
-                TransferAzureBlobToAzureBlob(account);
+                TransferAzureBlobToAzureBlob(account).Wait();
             }
         }
 
@@ -118,7 +118,7 @@ namespace DMLibSample
             return blobDirectory;
         }
 
-        public static async void TransferLocalFileToAzureBlob(CloudStorageAccount account)
+        public static async Task TransferLocalFileToAzureBlob(CloudStorageAccount account)
         { 
             string localFilePath = GetSourcePath();
             CloudBlockBlob blob = GetBlob(account); 
@@ -158,15 +158,15 @@ namespace DMLibSample
                 checkpoint = context.LastCheckpoint;
                 context = GetSingleTransferContext(checkpoint);
                 Console.WriteLine("\nResuming transfer...\n");
-                TransferManager.UploadAsync(localFilePath, blob, null, context).Wait();
+                await TransferManager.UploadAsync(localFilePath, blob, null, context);
             }
-            stopWatch.Stop();
 
+            stopWatch.Stop();
             Console.WriteLine("\nTransfer operation completed in " + stopWatch.Elapsed.TotalSeconds + " seconds.");
             ExecuteChoice(account);
         }
 
-        public static async void TransferLocalDirectoryToAzureBlobDirectory(CloudStorageAccount account)
+        public static async Task TransferLocalDirectoryToAzureBlobDirectory(CloudStorageAccount account)
         { 
             string localDirectoryPath = GetSourcePath();
             CloudBlobDirectory blobDirectory = GetBlobDirectory(account); 
@@ -211,15 +211,15 @@ namespace DMLibSample
                 checkpoint = context.LastCheckpoint;
                 context = GetDirectoryTransferContext(checkpoint);
                 Console.WriteLine("\nResuming transfer...\n");
-                TransferManager.UploadDirectoryAsync(localDirectoryPath, blobDirectory, options, context).Wait();
+                await TransferManager.UploadDirectoryAsync(localDirectoryPath, blobDirectory, options, context);
             }
-            stopWatch.Stop();
 
+            stopWatch.Stop();
             Console.WriteLine("\nTransfer operation completed in " + stopWatch.Elapsed.TotalSeconds + " seconds.");
             ExecuteChoice(account);
         }
 
-        public static async void TransferUrlToAzureBlob(CloudStorageAccount account)
+        public static async Task TransferUrlToAzureBlob(CloudStorageAccount account)
         {
             Uri uri = new Uri(GetSourcePath());
             CloudBlockBlob blob = GetBlob(account); 
@@ -259,15 +259,15 @@ namespace DMLibSample
                 checkpoint = context.LastCheckpoint;
                 context = GetSingleTransferContext(checkpoint);
                 Console.WriteLine("\nResuming transfer...\n");
-                task = TransferManager.CopyAsync(uri, blob, true, null, context, cancellationSource.Token);
+                await TransferManager.CopyAsync(uri, blob, true, null, context, cancellationSource.Token);
             }
+
             stopWatch.Stop();
-            
             Console.WriteLine("\nTransfer operation completed in " + stopWatch.Elapsed.TotalSeconds + " seconds.");
             ExecuteChoice(account);
         }
 
-        public static async void TransferAzureBlobToAzureBlob(CloudStorageAccount account)
+        public static async Task TransferAzureBlobToAzureBlob(CloudStorageAccount account)
         {
             CloudBlockBlob sourceBlob = GetBlob(account);
             CloudBlockBlob destinationBlob = GetBlob(account); 
@@ -307,10 +307,10 @@ namespace DMLibSample
                 checkpoint = context.LastCheckpoint;
                 context = GetSingleTransferContext(checkpoint);
                 Console.WriteLine("\nResuming transfer...\n");
-                task = TransferManager.CopyAsync(sourceBlob, destinationBlob, true, null, context, cancellationSource.Token);
+                await TransferManager.CopyAsync(sourceBlob, destinationBlob, false, null, context, cancellationSource.Token);
             }
-            stopWatch.Stop();
 
+            stopWatch.Stop();
             Console.WriteLine("\nTransfer operation completed in " + stopWatch.Elapsed.TotalSeconds + " seconds.");
             ExecuteChoice(account);
         }

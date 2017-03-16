@@ -1,7 +1,7 @@
 ---
 services: storage
 platforms: dotnet
-author: micurd
+author: seguler
 ---
 
 In this sample, we demonstrate how to use the Azure Storage Data Movement Library to interact with Blob Storage. To learn how this was created, check out the [Transfer Data with Azure Storage Data Movement Library](https://docs.microsoft.com/azure/storage/storage-use-data-movement-library) documentation.

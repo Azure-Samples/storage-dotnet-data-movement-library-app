@@ -2,26 +2,26 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.DataMovement;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
+using Microsoft.Azure.Storage.DataMovement;
 
-namespace DMLibSample
-{     
-    public class Program
+namespace DMLibSample.NetCore
+{
+    class Program
     {
         public static void Main()
         {
-            Console.WriteLine("Enter Storage account name:");           
+            Console.WriteLine("Enter Storage account name:");
             string accountName = Console.ReadLine();
 
-            Console.WriteLine("\nEnter Storage account key:");           
+            Console.WriteLine("\nEnter Storage account key:");
             string accountKey = Console.ReadLine();
 
             string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=" + accountName + ";AccountKey=" + accountKey;
             CloudStorageAccount account = CloudStorageAccount.Parse(storageConnectionString);
 
-            ExecuteChoice(account); 
+            ExecuteChoice(account);
         }
 
         public static void ExecuteChoice(CloudStorageAccount account)
@@ -31,19 +31,19 @@ namespace DMLibSample
 
             SetNumberOfParallelOperations();
 
-            if(choice == 1)
+            if (choice == 1)
             {
                 TransferLocalFileToAzureBlob(account).Wait();
             }
-            else if(choice == 2)
+            else if (choice == 2)
             {
                 TransferLocalDirectoryToAzureBlobDirectory(account).Wait();
             }
-            else if(choice == 3)
+            else if (choice == 3)
             {
                 TransferUrlToAzureBlob(account).Wait();
             }
-            else if(choice == 4)
+            else if (choice == 4)
             {
                 TransferAzureBlobToAzureBlob(account).Wait();
             }
@@ -55,9 +55,9 @@ namespace DMLibSample
 
             context.ProgressHandler = new Progress<TransferStatus>((progress) =>
             {
-                Console.Write("\rBytes transferred: {0}", progress.BytesTransferred );
+                Console.Write("\rBytes transferred: {0}", progress.BytesTransferred);
             });
-            
+
             return context;
         }
 
@@ -67,9 +67,9 @@ namespace DMLibSample
 
             context.ProgressHandler = new Progress<TransferStatus>((progress) =>
             {
-                Console.Write("\rBytes transferred: {0}", progress.BytesTransferred );
+                Console.Write("\rBytes transferred: {0}", progress.BytesTransferred);
             });
-            
+
             return context;
         }
 
@@ -119,11 +119,11 @@ namespace DMLibSample
         }
 
         public static async Task TransferLocalFileToAzureBlob(CloudStorageAccount account)
-        { 
+        {
             string localFilePath = GetSourcePath();
-            CloudBlockBlob blob = GetBlob(account); 
+            CloudBlockBlob blob = GetBlob(account);
             TransferCheckpoint checkpoint = null;
-            SingleTransferContext context = GetSingleTransferContext(checkpoint); 
+            SingleTransferContext context = GetSingleTransferContext(checkpoint);
             CancellationTokenSource cancellationSource = new CancellationTokenSource();
             Console.WriteLine("\nTransfer started...\nPress 'c' to temporarily cancel your transfer...\n");
 
@@ -133,12 +133,12 @@ namespace DMLibSample
             try
             {
                 task = TransferManager.UploadAsync(localFilePath, blob, null, context, cancellationSource.Token);
-                while(!task.IsCompleted)
+                while (!task.IsCompleted)
                 {
-                    if(Console.KeyAvailable)
+                    if (Console.KeyAvailable)
                     {
                         keyinfo = Console.ReadKey(true);
-                        if(keyinfo.Key == ConsoleKey.C)
+                        if (keyinfo.Key == ConsoleKey.C)
                         {
                             cancellationSource.Cancel();
                         }
@@ -146,12 +146,12 @@ namespace DMLibSample
                 }
                 await task;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Console.WriteLine("\nThe transfer is canceled: {0}", e.Message);  
+                Console.WriteLine("\nThe transfer is canceled: {0}", e.Message);
             }
 
-            if(cancellationSource.IsCancellationRequested)
+            if (cancellationSource.IsCancellationRequested)
             {
                 Console.WriteLine("\nTransfer will resume in 3 seconds...");
                 Thread.Sleep(3000);
@@ -167,11 +167,11 @@ namespace DMLibSample
         }
 
         public static async Task TransferLocalDirectoryToAzureBlobDirectory(CloudStorageAccount account)
-        { 
+        {
             string localDirectoryPath = GetSourcePath();
-            CloudBlobDirectory blobDirectory = GetBlobDirectory(account); 
+            CloudBlobDirectory blobDirectory = GetBlobDirectory(account);
             TransferCheckpoint checkpoint = null;
-            DirectoryTransferContext context = GetDirectoryTransferContext(checkpoint); 
+            DirectoryTransferContext context = GetDirectoryTransferContext(checkpoint);
             CancellationTokenSource cancellationSource = new CancellationTokenSource();
             Console.WriteLine("\nTransfer started...\nPress 'c' to temporarily cancel your transfer...\n");
 
@@ -186,12 +186,12 @@ namespace DMLibSample
             try
             {
                 task = TransferManager.UploadDirectoryAsync(localDirectoryPath, blobDirectory, options, context, cancellationSource.Token);
-                while(!task.IsCompleted)
+                while (!task.IsCompleted)
                 {
-                    if(Console.KeyAvailable)
+                    if (Console.KeyAvailable)
                     {
                         keyinfo = Console.ReadKey(true);
-                        if(keyinfo.Key == ConsoleKey.C)
+                        if (keyinfo.Key == ConsoleKey.C)
                         {
                             cancellationSource.Cancel();
                         }
@@ -199,12 +199,12 @@ namespace DMLibSample
                 }
                 await task;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Console.WriteLine("\nThe transfer is canceled: {0}", e.Message);  
+                Console.WriteLine("\nThe transfer is canceled: {0}", e.Message);
             }
 
-            if(cancellationSource.IsCancellationRequested)
+            if (cancellationSource.IsCancellationRequested)
             {
                 Console.WriteLine("\nTransfer will resume in 3 seconds...");
                 Thread.Sleep(3000);
@@ -222,9 +222,9 @@ namespace DMLibSample
         public static async Task TransferUrlToAzureBlob(CloudStorageAccount account)
         {
             Uri uri = new Uri(GetSourcePath());
-            CloudBlockBlob blob = GetBlob(account); 
+            CloudBlockBlob blob = GetBlob(account);
             TransferCheckpoint checkpoint = null;
-            SingleTransferContext context = GetSingleTransferContext(checkpoint); 
+            SingleTransferContext context = GetSingleTransferContext(checkpoint);
             CancellationTokenSource cancellationSource = new CancellationTokenSource();
             Console.WriteLine("\nTransfer started...\nPress 'c' to temporarily cancel your transfer...\n");
 
@@ -234,12 +234,12 @@ namespace DMLibSample
             try
             {
                 task = TransferManager.CopyAsync(uri, blob, true, null, context, cancellationSource.Token);
-                while(!task.IsCompleted)
+                while (!task.IsCompleted)
                 {
-                    if(Console.KeyAvailable)
+                    if (Console.KeyAvailable)
                     {
                         keyinfo = Console.ReadKey(true);
-                        if(keyinfo.Key == ConsoleKey.C)
+                        if (keyinfo.Key == ConsoleKey.C)
                         {
                             cancellationSource.Cancel();
                         }
@@ -247,12 +247,12 @@ namespace DMLibSample
                 }
                 await task;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Console.WriteLine("\nThe transfer is canceled: {0}", e.Message);  
+                Console.WriteLine("\nThe transfer is canceled: {0}", e.Message);
             }
 
-            if(cancellationSource.IsCancellationRequested)
+            if (cancellationSource.IsCancellationRequested)
             {
                 Console.WriteLine("\nTransfer will resume in 3 seconds...");
                 Thread.Sleep(3000);
@@ -270,9 +270,9 @@ namespace DMLibSample
         public static async Task TransferAzureBlobToAzureBlob(CloudStorageAccount account)
         {
             CloudBlockBlob sourceBlob = GetBlob(account);
-            CloudBlockBlob destinationBlob = GetBlob(account); 
+            CloudBlockBlob destinationBlob = GetBlob(account);
             TransferCheckpoint checkpoint = null;
-            SingleTransferContext context = GetSingleTransferContext(checkpoint); 
+            SingleTransferContext context = GetSingleTransferContext(checkpoint);
             CancellationTokenSource cancellationSource = new CancellationTokenSource();
             Console.WriteLine("\nTransfer started...\nPress 'c' to temporarily cancel your transfer...\n");
 
@@ -282,12 +282,12 @@ namespace DMLibSample
             try
             {
                 task = TransferManager.CopyAsync(sourceBlob, destinationBlob, true, null, context, cancellationSource.Token);
-                while(!task.IsCompleted)
+                while (!task.IsCompleted)
                 {
-                    if(Console.KeyAvailable)
+                    if (Console.KeyAvailable)
                     {
                         keyinfo = Console.ReadKey(true);
-                        if(keyinfo.Key == ConsoleKey.C)
+                        if (keyinfo.Key == ConsoleKey.C)
                         {
                             cancellationSource.Cancel();
                         }
@@ -295,12 +295,12 @@ namespace DMLibSample
                 }
                 await task;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Console.WriteLine("\nThe transfer is canceled: {0}", e.Message);  
+                Console.WriteLine("\nThe transfer is canceled: {0}", e.Message);
             }
 
-            if(cancellationSource.IsCancellationRequested)
+            if (cancellationSource.IsCancellationRequested)
             {
                 Console.WriteLine("\nTransfer will resume in 3 seconds...");
                 Thread.Sleep(3000);
@@ -316,4 +316,3 @@ namespace DMLibSample
         }
     }
 }
-

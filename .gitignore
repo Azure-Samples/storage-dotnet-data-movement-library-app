@@ -2,3 +2,5 @@
 bin
 obj
 project.lock.json
+/.vs/slnx.sqlite
+/.vs

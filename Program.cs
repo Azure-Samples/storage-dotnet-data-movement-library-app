@@ -233,7 +233,7 @@ namespace DMLibSample
             ConsoleKeyInfo keyinfo;
             try
             {
-                task = TransferManager.CopyAsync(uri, blob, true, null, context, cancellationSource.Token);
+                task = TransferManager.CopyAsync(uri, blob, CopyMethod.ServiceSideAsyncCopy, null, context, cancellationSource.Token);
                 while(!task.IsCompleted)
                 {
                     if(Console.KeyAvailable)
@@ -259,7 +259,7 @@ namespace DMLibSample
                 checkpoint = context.LastCheckpoint;
                 context = GetSingleTransferContext(checkpoint);
                 Console.WriteLine("\nResuming transfer...\n");
-                await TransferManager.CopyAsync(uri, blob, true, null, context, cancellationSource.Token);
+                await TransferManager.CopyAsync(uri, blob, CopyMethod.ServiceSideAsyncCopy, null, context, cancellationSource.Token);
             }
 
             stopWatch.Stop();
@@ -281,7 +281,7 @@ namespace DMLibSample
             ConsoleKeyInfo keyinfo;
             try
             {
-                task = TransferManager.CopyAsync(sourceBlob, destinationBlob, true, null, context, cancellationSource.Token);
+                task = TransferManager.CopyAsync(sourceBlob, destinationBlob, CopyMethod.SyncCopy, null, context, cancellationSource.Token);
                 while(!task.IsCompleted)
                 {
                     if(Console.KeyAvailable)
@@ -307,7 +307,7 @@ namespace DMLibSample
                 checkpoint = context.LastCheckpoint;
                 context = GetSingleTransferContext(checkpoint);
                 Console.WriteLine("\nResuming transfer...\n");
-                await TransferManager.CopyAsync(sourceBlob, destinationBlob, false, null, context, cancellationSource.Token);
+                await TransferManager.CopyAsync(sourceBlob, destinationBlob, CopyMethod.SyncCopy, null, context, cancellationSource.Token);
             }
 
             stopWatch.Stop();
